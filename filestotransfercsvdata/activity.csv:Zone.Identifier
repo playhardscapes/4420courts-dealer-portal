@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://global.americanexpress.com/activity?account_key=C390644A8AF514D8FFF0DA31D645B597&days=30&inav=myca_statements
+HostUrl=https://global.americanexpress.com/api/servicing/v1/financials/documents?file_format=csv&limit=ALL&&start_date=2025-06-29&end_date=2025-07-29&status=posted&account_key=C390644A8AF514D8FFF0DA31D645B597&client_id=AmexAPI

@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://go.xero.com/GeneralLedger/ChartOfAccounts.aspx
+HostUrl=https://go.xero.com/GeneralLedger/ChartOfAccountsDownloader.aspx?OrganisationID=85de97fd-bf30-4f6f-9f25-1ee3aee89d24&Country=CNTRY/US

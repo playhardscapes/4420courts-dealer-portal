@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://app.bluevine.com/dashboard/depositAccounts
+HostUrl=https://app.bluevine.com/api/v3/dda-user/b8a8ce8c8d5c40bd9c4f225621657b33/transactions/download/?start_date=2025-07-01&end_date=2025-07-27&account=99c67fa5b6254900bc26f41aeb8a84fa
