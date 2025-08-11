@@ -93,6 +93,7 @@ export async function POST(request: NextRequest) {
           data: {
             ...transaction,
             transactionType: 'DEBIT', // Receipt processing is typically a debit/expense
+            bankAccount: 'RECEIPT_CAPTURE', // Override with proper enum value
             category: categorizationResult.category,
             subcategory: categorizationResult.subcategory,
             confidence: categorizationResult.confidence,
