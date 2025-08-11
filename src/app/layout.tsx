@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Orbitron } from 'next/font/google';
 import { SidebarNavigation } from '../components/layout/SidebarNavigation';
+import { AuthProvider } from '../contexts/AuthContext';
+import ProtectedRoute from '../components/ProtectedRoute';
 import "./globals.css";
 
 const inter = Inter({
@@ -26,12 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${orbitron.variable} antialiased`}>
-        <div className="min-h-screen bg-gray-50">
-          <SidebarNavigation />
-          <main className="lg:pl-72">
+        <AuthProvider>
+          <ProtectedRoute>
             {children}
-          </main>
-        </div>
+          </ProtectedRoute>
+        </AuthProvider>
       </body>
     </html>
   );

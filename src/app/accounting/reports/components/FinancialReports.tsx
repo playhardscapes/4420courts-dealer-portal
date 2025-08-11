@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { 
   DocumentTextIcon,
   ChartBarIcon,
-  ArrowArrowTrendingUpIcon,
+  ArrowTrendingUpIcon,
   CurrencyDollarIcon,
   CalendarIcon,
   ArrowDownTrayIcon
