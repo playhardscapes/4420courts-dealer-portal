@@ -4,11 +4,11 @@ import { prisma } from '@/lib/prisma';
 // GET /api/orders/[id] - Get a specific order
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const order = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id: (await params).id },
       include: {
         customer: true,
         dealer: true,
@@ -42,13 +42,13 @@ export async function GET(
 // PUT /api/orders/[id] - Update a specific order
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
     
     const order = await prisma.order.update({
-      where: { id: params.id },
+      where: { id: (await params).id },
       data: {
         status: body.status,
         subtotal: body.subtotal,
@@ -100,12 +100,12 @@ export async function PUT(
 // DELETE /api/orders/[id] - Delete a specific order (soft delete by setting status to CANCELLED)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Instead of hard delete, we'll cancel the order
     const order = await prisma.order.update({
-      where: { id: params.id },
+      where: { id: (await params).id },
       data: {
         status: 'CANCELLED'
       }

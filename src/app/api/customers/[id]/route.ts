@@ -4,11 +4,11 @@ import { prisma } from '@/lib/prisma';
 // GET /api/customers/[id] - Get a specific customer
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const customer = await prisma.customer.findUnique({
-      where: { id: params.id },
+      where: { id: (await params).id },
       include: {
         orders: {
           include: {
@@ -57,14 +57,14 @@ export async function GET(
 // PATCH /api/customers/[id] - Update a specific customer
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
     
     // First update the user record
     const customer = await prisma.customer.findUnique({
-      where: { id: params.id },
+      where: { id: (await params).id },
       include: { user: true }
     });
 
@@ -88,7 +88,7 @@ export async function PATCH(
 
     // Update customer information
     const updatedCustomer = await prisma.customer.update({
-      where: { id: params.id },
+      where: { id: (await params).id },
       data: {
         companyName: body.companyName,
         customerGroup: body.customerGroup,
@@ -139,12 +139,12 @@ export async function PATCH(
 // DELETE /api/customers/[id] - Delete a specific customer (soft delete by setting user status to INACTIVE)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get customer to find associated user
     const customer = await prisma.customer.findUnique({
-      where: { id: params.id },
+      where: { id: (await params).id },
       include: { user: true }
     });
 

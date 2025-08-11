@@ -3,11 +3,11 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const ticket = await prisma.supportTicket.findUnique({
-      where: { id: params.id },
+      where: { id: (await params).id },
       include: {
         customer: {
           include: {
@@ -44,13 +44,13 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
     
     const ticket = await prisma.supportTicket.update({
-      where: { id: params.id },
+      where: { id: (await params).id },
       data: {
         ...body,
         resolvedAt: body.status === 'RESOLVED' ? new Date() : undefined,
@@ -85,11 +85,11 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await prisma.supportTicket.delete({
-      where: { id: params.id }
+      where: { id: (await params).id }
     });
 
     return NextResponse.json({ success: true });

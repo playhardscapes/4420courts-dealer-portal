@@ -4,11 +4,11 @@ import { prisma } from '@/lib/prisma';
 // GET /api/products/[id] - Get a specific product
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { id: (await params).id },
       include: {
         orderItems: {
           include: {
@@ -53,13 +53,13 @@ export async function GET(
 // PUT /api/products/[id] - Update a specific product
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
     
     const product = await prisma.product.update({
-      where: { id: params.id },
+      where: { id: (await params).id },
       data: {
         sku: body.sku,
         name: body.name,
@@ -111,11 +111,11 @@ export async function PUT(
 // DELETE /api/products/[id] - Delete a specific product
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await prisma.product.delete({
-      where: { id: params.id },
+      where: { id: (await params).id },
     });
 
     return NextResponse.json({ message: 'Product deleted successfully' });
