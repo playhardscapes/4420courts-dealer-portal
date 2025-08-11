@@ -232,10 +232,10 @@ export default function CustomersPage() {
 
   const loadProspects = async () => {
     try {
-      const response = await fetch('/api/support-tickets?status=OPEN');
+      const response = await fetch('/api/prospects');
       if (response.ok) {
         const data = await response.json();
-        setAvailableProspects(data.tickets);
+        setAvailableProspects(data.prospects || data);
       }
     } catch (error) {
       console.error('Error loading prospects:', error);

@@ -17,9 +17,14 @@ export async function GET(
                 orderNumber: true,
                 customer: {
                   select: {
-                    firstName: true,
-                    lastName: true,
-                    companyName: true
+                    id: true,
+                    companyName: true,
+                    user: {
+                      select: {
+                        firstName: true,
+                        lastName: true
+                      }
+                    }
                   }
                 }
               }

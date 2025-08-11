@@ -30,9 +30,6 @@ export async function GET(
         },
         payments: {
           orderBy: { createdAt: 'desc' }
-        },
-        supportTickets: {
-          orderBy: { createdAt: 'desc' }
         }
       }
     });

@@ -27,10 +27,14 @@ export async function GET(request: NextRequest) {
         { orderNumber: { contains: search, mode: 'insensitive' } },
         { customer: { 
           OR: [
-            { firstName: { contains: search, mode: 'insensitive' } },
-            { lastName: { contains: search, mode: 'insensitive' } },
             { companyName: { contains: search, mode: 'insensitive' } },
-            { email: { contains: search, mode: 'insensitive' } }
+            { user: {
+              OR: [
+                { firstName: { contains: search, mode: 'insensitive' } },
+                { lastName: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } }
+              ]
+            }}
           ]
         }}
       ];
@@ -42,10 +46,15 @@ export async function GET(request: NextRequest) {
         include: {
           customer: {
             select: {
-              firstName: true,
-              lastName: true,
+              id: true,
               companyName: true,
-              email: true
+              user: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                  email: true
+                }
+              }
             }
           },
           dealer: {
