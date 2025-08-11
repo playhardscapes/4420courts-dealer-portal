@@ -9,7 +9,7 @@ import {
   EyeIcon,
   ClockIcon,
   MapPinIcon,
-  ThermometerIcon,
+  SignalIcon,
   CloudIcon,
   PlayIcon,
   PauseIcon,
@@ -415,7 +415,7 @@ export default function ProjectDocumentationPage() {
                       <div>{new Date(photo.timestamp).toLocaleString()}</div>
                       <div>{photo.phase}</div>
                       <div className="flex items-center gap-2">
-                        <ThermometerIcon className="w-4 h-4" />
+                        <SignalIcon className="w-4 h-4" />
                         {photo.weather.temperature}°F - {photo.weather.condition}
                       </div>
                     </div>

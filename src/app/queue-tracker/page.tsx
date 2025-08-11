@@ -5,7 +5,7 @@ import {
   QueueListIcon,
   ClockIcon,
   MapPinIcon,
-  ThermometerIcon,
+  SignalIcon,
   CloudIcon,
   SunIcon,
   EyeIcon,

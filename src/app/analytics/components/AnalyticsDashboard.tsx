@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { 
   ChartBarIcon, 
-  TrendingUpIcon, 
+  ArrowTrendingUpIcon, 
   UsersIcon,
   CurrencyDollarIcon,
   CalendarIcon,
@@ -185,7 +185,7 @@ export function AnalyticsDashboard() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-              <TrendingUpIcon className="w-6 h-6 text-orange-600" />
+              <ArrowTrendingUpIcon className="w-6 h-6 text-orange-600" />
             </div>
             <div className="ml-4 flex-1">
               <h3 className="text-sm font-medium text-gray-500">Customer LTV</h3>

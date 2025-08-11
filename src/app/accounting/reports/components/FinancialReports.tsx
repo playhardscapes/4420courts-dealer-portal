@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { 
   DocumentTextIcon,
   ChartBarIcon,
-  TrendingUpIcon,
+  ArrowArrowTrendingUpIcon,
   CurrencyDollarIcon,
   CalendarIcon,
   ArrowDownTrayIcon
@@ -116,7 +116,7 @@ export function FinancialReports() {
   const reports = [
     { id: 'balanceSheet', name: 'Balance Sheet', icon: DocumentTextIcon },
     { id: 'incomeStatement', name: 'Income Statement', icon: ChartBarIcon },
-    { id: 'cashFlow', name: 'Cash Flow', icon: TrendingUpIcon },
+    { id: 'cashFlow', name: 'Cash Flow', icon: ArrowTrendingUpIcon },
     { id: 'trialBalance', name: 'Trial Balance', icon: CurrencyDollarIcon }
   ] as const;
 
@@ -487,7 +487,7 @@ export function FinancialReports() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <TrendingUpIcon className="w-6 h-6 text-blue-600" />
+              <ArrowTrendingUpIcon className="w-6 h-6 text-blue-600" />
             </div>
             <div className="ml-4">
               <h3 className="text-sm font-medium text-gray-500">Current Ratio</h3>

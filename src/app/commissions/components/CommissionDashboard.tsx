@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { CommissionStatus, DealerServiceLevel } from '@prisma/client';
 import { 
   CurrencyDollarIcon, 
-  TrendingUpIcon, 
+  ArrowTrendingUpIcon, 
   CheckCircleIcon,
   ClockIcon,
   ExclamationTriangleIcon
@@ -129,7 +129,7 @@ export function CommissionDashboard() {
       case 'PAID':
         return <CheckCircleIcon className="w-5 h-5 text-green-500" />;
       case 'APPROVED':
-        return <TrendingUpIcon className="w-5 h-5 text-blue-500" />;
+        return <ArrowTrendingUpIcon className="w-5 h-5 text-blue-500" />;
       case 'CALCULATED':
         return <ClockIcon className="w-5 h-5 text-yellow-500" />;
       case 'PENDING':
@@ -226,7 +226,7 @@ export function CommissionDashboard() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <TrendingUpIcon className="w-6 h-6 text-purple-600" />
+              <ArrowTrendingUpIcon className="w-6 h-6 text-purple-600" />
             </div>
             <div className="ml-4">
               <h3 className="text-sm font-medium text-gray-500">Active Dealers</h3>

@@ -4,11 +4,12 @@ import { prisma } from '@/lib/prisma';
 // GET /api/assets/[id] - Get a specific asset
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const asset = await prisma.asset.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!asset) {
@@ -31,13 +32,14 @@ export async function GET(
 // PUT /api/assets/[id] - Update a specific asset
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     
     const asset = await prisma.asset.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: body.name,
         description: body.description,
@@ -92,11 +94,12 @@ export async function PUT(
 // DELETE /api/assets/[id] - Delete a specific asset
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.asset.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: 'Asset deleted successfully' });

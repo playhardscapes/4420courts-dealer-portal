@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { 
   MapPinIcon,
   ClockIcon,
-  ThermometerIcon,
+  SignalIcon,
   SunIcon,
   CloudIcon,
   VideoCameraIcon,
@@ -304,7 +304,7 @@ export default function PublicSchedulePage() {
                     <span className="font-semibold">{todayActivity.location}</span>
                   </div>
                   <div className="flex items-center gap-2 mb-2">
-                    <ThermometerIcon className="w-5 h-5" />
+                    <SignalIcon className="w-5 h-5" />
                     <span>{weather.temperature}°F Rising → Perfect Coating</span>
                   </div>
                   <div className="flex items-center gap-2 mb-2">

@@ -8,7 +8,7 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
-  ThermometerIcon
+  SignalIcon
 } from '@heroicons/react/24/outline';
 
 interface WeatherData {
