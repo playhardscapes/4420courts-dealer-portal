@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
         const createdTransaction = await prisma.bankTransaction.create({
           data: {
             ...transaction,
+            transactionType: transaction.amount < 0 ? 'DEBIT' : 'CREDIT', // Determine from amount
+            bankAccount: 'OTHER_CHECKING', // Default for imported transactions
             category: result.category,
             subcategory: result.subcategory,
             confidence: result.confidence,
