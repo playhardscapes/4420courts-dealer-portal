@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
         const bankTransaction = await prisma.bankTransaction.create({
           data: {
             ...transaction,
+            transactionType: 'DEBIT', // Receipt processing is typically a debit/expense
             category: categorizationResult.category,
             subcategory: categorizationResult.subcategory,
             confidence: categorizationResult.confidence,
