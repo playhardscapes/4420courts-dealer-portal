@@ -113,20 +113,23 @@ export async function PATCH(
   } catch (error) {
     console.error('Error updating customer:', error);
     
-    // Handle customer not found
-    if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Customer not found' },
-        { status: 404 }
-      );
-    }
+    // Handle Prisma-specific errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      // Handle customer not found
+      if (error.code === 'P2025') {
+        return NextResponse.json(
+          { error: 'Customer not found' },
+          { status: 404 }
+        );
+      }
 
-    // Handle unique constraint violation
-    if (error.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Email already exists' },
-        { status: 409 }
-      );
+      // Handle unique constraint violation
+      if (error.code === 'P2002') {
+        return NextResponse.json(
+          { error: 'Email already exists' },
+          { status: 409 }
+        );
+      }
     }
 
     return NextResponse.json(
@@ -169,12 +172,15 @@ export async function DELETE(
   } catch (error) {
     console.error('Error deactivating customer:', error);
     
-    // Handle customer not found
-    if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Customer not found' },
-        { status: 404 }
-      );
+    // Handle Prisma-specific errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      // Handle customer not found
+      if (error.code === 'P2025') {
+        return NextResponse.json(
+          { error: 'Customer not found' },
+          { status: 404 }
+        );
+      }
     }
 
     return NextResponse.json(

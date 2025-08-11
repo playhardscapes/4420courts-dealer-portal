@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
     console.error('Error creating asset:', error);
     
     // Handle unique constraint violation
-    if (error.code === 'P2002') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { error: 'Serial number already exists' },
         { status: 409 }

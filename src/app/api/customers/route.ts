@@ -149,12 +149,15 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating customer:', error);
     
-    // Handle unique constraint violation
-    if (error.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Email already exists' },
-        { status: 409 }
-      );
+    // Handle Prisma-specific errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      // Handle unique constraint violation
+      if (error.code === 'P2002') {
+        return NextResponse.json(
+          { error: 'Email already exists' },
+          { status: 409 }
+        );
+      }
     }
 
     return NextResponse.json(

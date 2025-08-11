@@ -68,20 +68,23 @@ export async function PUT(
   } catch (error) {
     console.error('Error updating asset:', error);
     
-    // Handle asset not found
-    if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Asset not found' },
-        { status: 404 }
-      );
-    }
+    // Handle Prisma-specific errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      // Handle asset not found
+      if (error.code === 'P2025') {
+        return NextResponse.json(
+          { error: 'Asset not found' },
+          { status: 404 }
+        );
+      }
 
-    // Handle unique constraint violation
-    if (error.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Serial number already exists' },
-        { status: 409 }
-      );
+      // Handle unique constraint violation
+      if (error.code === 'P2002') {
+        return NextResponse.json(
+          { error: 'Serial number already exists' },
+          { status: 409 }
+        );
+      }
     }
 
     return NextResponse.json(
@@ -106,12 +109,15 @@ export async function DELETE(
   } catch (error) {
     console.error('Error deleting asset:', error);
     
-    // Handle asset not found
-    if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: 'Asset not found' },
-        { status: 404 }
-      );
+    // Handle Prisma-specific errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      // Handle asset not found
+      if (error.code === 'P2025') {
+        return NextResponse.json(
+          { error: 'Asset not found' },
+          { status: 404 }
+        );
+      }
     }
 
     return NextResponse.json(

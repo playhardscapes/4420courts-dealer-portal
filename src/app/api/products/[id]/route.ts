@@ -86,7 +86,7 @@ export async function PUT(
     console.error('Error updating product:', error);
     
     // Handle product not found
-    if (error.code === 'P2025') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
@@ -94,7 +94,7 @@ export async function PUT(
     }
 
     // Handle unique constraint violation
-    if (error.code === 'P2002') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { error: 'SKU already exists' },
         { status: 409 }
@@ -123,7 +123,7 @@ export async function DELETE(
     console.error('Error deleting product:', error);
     
     // Handle product not found
-    if (error.code === 'P2025') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
@@ -131,7 +131,7 @@ export async function DELETE(
     }
 
     // Handle foreign key constraint (product is referenced in orders)
-    if (error.code === 'P2003') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2003') {
       return NextResponse.json(
         { error: 'Cannot delete product that has been ordered' },
         { status: 409 }

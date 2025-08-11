@@ -83,7 +83,7 @@ export async function PUT(
     console.error('Error updating order:', error);
     
     // Handle order not found
-    if (error.code === 'P2025') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       return NextResponse.json(
         { error: 'Order not found' },
         { status: 404 }
@@ -119,7 +119,7 @@ export async function DELETE(
     console.error('Error cancelling order:', error);
     
     // Handle order not found
-    if (error.code === 'P2025') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       return NextResponse.json(
         { error: 'Order not found' },
         { status: 404 }

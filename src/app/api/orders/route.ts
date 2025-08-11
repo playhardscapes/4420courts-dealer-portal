@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
     console.error('Error creating order:', error);
     
     // Handle unique constraint violation
-    if (error.code === 'P2002') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { error: 'Order number already exists' },
         { status: 409 }
