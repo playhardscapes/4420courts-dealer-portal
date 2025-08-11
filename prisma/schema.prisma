@@ -1,0 +1,951 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========================================
+// CORE USER MANAGEMENT
+// ========================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+  phone     String?
+  role      UserRole @default(CUSTOMER)
+  status    UserStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Customer specific fields
+  customer Customer?
+  
+  // Dealer specific fields  
+  dealer   Dealer?
+  
+  // Admin specific fields
+  permissions String[] // JSON array of permissions
+
+  @@map("users")
+}
+
+enum UserRole {
+  CUSTOMER
+  DEALER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  LEAD
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+// ========================================
+// CUSTOMER MANAGEMENT
+// ========================================
+
+model Customer {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Customer details
+  companyName    String?
+  billingAddress Json? // Flexible address storage
+  shippingAddress Json?
+  taxId          String?
+  customerGroup  CustomerGroup @default(RETAIL)
+  metadata       Json? // For storing lead data and other flexible info
+  
+  // Relationship tracking
+  orders         Order[]
+  invoices       Invoice[]
+  payments       Payment[]
+  supportTickets SupportTicket[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("customers")
+}
+
+enum CustomerGroup {
+  RETAIL
+  CONTRACTOR
+  DEALER
+  WHOLESALE
+}
+
+// ========================================
+// DEALER MANAGEMENT  
+// ========================================
+
+model Dealer {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Dealer specific info
+  companyName     String
+  dealerCode      String  @unique
+  territory       String?
+  commissionRate  Decimal @default(0.10) // 10% default
+  serviceLevel    DealerServiceLevel
+  status          DealerStatus @default(PENDING)
+  
+  // Address and contact
+  businessAddress Json
+  licenseNumber   String?
+  insuranceInfo   Json?
+  
+  // Performance tracking
+  orders          Order[]
+  commissions     Commission[]
+  territories     Territory[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("dealers")
+}
+
+enum DealerServiceLevel {
+  LEVEL_1  // Free DIY Resources ($0)
+  LEVEL_2  // Monthly Membership ($49.99/month)
+  LEVEL_3  // Coating & Lining Specialist ($10k-15k)
+  LEVEL_4  // Project Management + Finish ($15k-25k)  
+  LEVEL_5  // Full Project Management ($30k-45k)
+  LEVEL_5_5 // Premium Personalized (Contact for Pricing)
+}
+
+enum DealerStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  TERMINATED
+}
+
+// ========================================
+// TERRITORY MANAGEMENT
+// ========================================
+
+model Territory {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  boundaries  Json   // Geographic boundaries as JSON
+  dealerId    String
+  dealer      Dealer @relation(fields: [dealerId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("territories")
+}
+
+// ========================================
+// PRODUCT CATALOG
+// ========================================
+
+model Product {
+  id          String @id @default(cuid())
+  sku         String @unique
+  name        String
+  description String?
+  category    ProductCategory
+  type        ProductType
+  
+  // Pricing
+  retailPrice    Decimal
+  dealerPrice    Decimal?
+  wholesalePrice Decimal?
+  cost           Decimal
+  
+  // Inventory
+  stockQuantity     Int     @default(0)
+  lowStockAlert     Int     @default(10)
+  trackInventory    Boolean @default(true)
+  allowBackorders   Boolean @default(false)
+  
+  // Product details
+  weight      Decimal?
+  dimensions  Json? // {length, width, height}
+  images      Json? // Array of image URLs
+  
+  // Relationships
+  orderItems     OrderItem[]
+  invoiceItems   InvoiceItem[]
+  inventoryMoves InventoryMove[]
+  billItems      BillItem[]
+  poItems        POItem[]
+  
+  status    ProductStatus @default(ACTIVE)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("products")
+}
+
+enum ProductCategory {
+  COMPLETE_COURT_KIT
+  RESURFACING_MATERIALS
+  TOOLS_EQUIPMENT
+  SERVICES
+  DIGITAL_RESOURCES
+  ACCESSORIES
+}
+
+enum ProductType {
+  PHYSICAL
+  SERVICE
+  DIGITAL
+  SUBSCRIPTION
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  DISCONTINUED
+  COMING_SOON
+}
+
+// ========================================
+// INVENTORY MANAGEMENT
+// ========================================
+
+model InventoryMove {
+  id        String @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  
+  type        InventoryMoveType
+  quantity    Int
+  reference   String? // Order ID, adjustment reason, etc.
+  notes       String?
+  
+  // Tracking
+  performedBy String? // User ID who performed the move
+  createdAt   DateTime @default(now())
+
+  @@map("inventory_moves")
+}
+
+enum InventoryMoveType {
+  SALE
+  PURCHASE
+  ADJUSTMENT
+  RETURN
+  DAMAGED
+  TRANSFER
+}
+
+// ========================================
+// ORDER MANAGEMENT
+// ========================================
+
+model Order {
+  id       String @id @default(cuid())
+  orderNumber String @unique
+  
+  // Customer info
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  
+  // Dealer info (if applicable)
+  dealerId String?
+  dealer   Dealer? @relation(fields: [dealerId], references: [id])
+  
+  // Order details
+  status          OrderStatus
+  subtotal        Decimal
+  taxAmount       Decimal     @default(0)
+  shippingAmount  Decimal     @default(0)
+  discountAmount  Decimal     @default(0)
+  totalAmount     Decimal
+  
+  // Addresses
+  billingAddress  Json
+  shippingAddress Json
+  
+  // Order items
+  items OrderItem[]
+  
+  // Fulfillment
+  shippingMethod String?
+  trackingNumber String?
+  shippedAt      DateTime?
+  deliveredAt    DateTime?
+  
+  // Payment
+  paymentStatus PaymentStatus @default(PENDING)
+  paidAt        DateTime?
+  
+  // Relationships
+  invoices Invoice[]
+  payments Payment[]
+  
+  // Metadata
+  notes     String?
+  metadata  Json? // For custom fields
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  
+  quantity  Int
+  unitPrice Decimal
+  totalPrice Decimal
+  
+  // For services or custom items
+  description String?
+  
+  createdAt DateTime @default(now())
+
+  @@map("order_items")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PARTIALLY_PAID
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+// ========================================
+// INVOICING SYSTEM
+// ========================================
+
+model Invoice {
+  id            String @id @default(cuid())
+  invoiceNumber String @unique
+  
+  // Customer
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  
+  // Order reference (optional - can create invoices without orders)
+  orderId String?
+  order   Order?  @relation(fields: [orderId], references: [id])
+  
+  // Invoice details
+  status         InvoiceStatus
+  subtotal       Decimal
+  taxAmount      Decimal       @default(0)
+  discountAmount Decimal       @default(0)
+  totalAmount    Decimal
+  
+  // Dates
+  issueDate DateTime @default(now())
+  dueDate   DateTime
+  paidDate  DateTime?
+  
+  // Payment tracking
+  amountPaid    Decimal @default(0)
+  amountDue     Decimal
+  paymentStatus PaymentStatus @default(PENDING)
+  
+  // Invoice content
+  items    InvoiceItem[]
+  payments Payment[]
+  
+  // Metadata
+  notes    String?
+  terms    String? // Payment terms
+  metadata Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id        String @id @default(cuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  
+  description String
+  quantity    Int
+  unitPrice   Decimal
+  totalPrice  Decimal
+  
+  createdAt DateTime @default(now())
+
+  @@map("invoice_items")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  VIEWED
+  OVERDUE
+  PAID
+  CANCELLED
+  VOIDED
+}
+
+// ========================================
+// PAYMENT SYSTEM
+// ========================================
+
+model Payment {
+  id            String @id @default(cuid())
+  paymentNumber String @unique
+  
+  // Customer
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  
+  // References
+  orderId   String?
+  order     Order?   @relation(fields: [orderId], references: [id])
+  invoiceId String?
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id])
+  
+  // Payment details
+  amount        Decimal
+  method        PaymentMethod
+  status        PaymentStatus
+  
+  // External references (Stripe, PayPal, etc.)
+  externalId       String? // Payment processor ID
+  transactionId    String?
+  processorResponse Json?  // Raw response from payment processor
+  
+  // Metadata
+  notes     String?
+  metadata  Json?
+  
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("payments")
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  BANK_TRANSFER
+  CHECK
+  CASH
+  STRIPE
+  PAYPAL
+  OTHER
+}
+
+// ========================================
+// COMMISSION TRACKING
+// ========================================
+
+model Commission {
+  id       String @id @default(cuid())
+  dealerId String
+  dealer   Dealer @relation(fields: [dealerId], references: [id])
+  
+  // Source
+  orderId String
+  
+  // Commission calculation
+  orderAmount    Decimal
+  commissionRate Decimal
+  commissionAmount Decimal
+  
+  status    CommissionStatus @default(PENDING)
+  paidAt    DateTime?
+  
+  // Tracking
+  period    String // "2025-01" for monthly tracking
+  notes     String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("commissions")
+}
+
+enum CommissionStatus {
+  PENDING
+  CALCULATED
+  APPROVED
+  PAID
+  DISPUTED
+}
+
+// ========================================
+// SUPPORT SYSTEM
+// ========================================
+
+model SupportTicket {
+  id         String @id @default(cuid())
+  ticketNumber String @unique
+  
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  
+  subject     String
+  description String
+  priority    TicketPriority @default(MEDIUM)
+  status      TicketStatus   @default(OPEN)
+  category    TicketCategory @default(GENERAL)
+  
+  // Assignment
+  assignedTo String? // User ID of assigned agent
+  
+  // Tracking
+  resolvedAt DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("support_tickets")
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+  CANCELLED
+}
+
+enum TicketCategory {
+  GENERAL
+  TECHNICAL
+  BILLING
+  PRODUCT
+  SHIPPING
+  RETURN
+}
+
+// ========================================
+// ACCOUNTING CORE
+// ========================================
+
+model Account {
+  id          String @id @default(cuid())
+  code        String @unique // Account code (e.g., "1001")
+  name        String
+  type        AccountType
+  parentId    String?
+  parent      Account?   @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children    Account[]  @relation("AccountHierarchy")
+  
+  description String?
+  isActive    Boolean    @default(true)
+  balance     Decimal    @default(0)
+  
+  // Journal entries
+  debitEntries  JournalEntry[] @relation("DebitAccount")
+  creditEntries JournalEntry[] @relation("CreditAccount")
+  
+  // Bank transactions
+  bankTransactions BankTransaction[] @relation("AccountTransactions")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("accounts")
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
+}
+
+model JournalEntry {
+  id          String @id @default(cuid())
+  entryNumber String @unique
+  
+  debitAccountId  String
+  debitAccount    Account @relation("DebitAccount", fields: [debitAccountId], references: [id])
+  creditAccountId String
+  creditAccount   Account @relation("CreditAccount", fields: [creditAccountId], references: [id])
+  
+  amount      Decimal
+  description String
+  reference   String? // Order ID, Invoice ID, etc.
+  
+  // Metadata
+  metadata Json?
+  
+  // Relations
+  bankTransactions BankTransaction[]
+  
+  entryDate DateTime @default(now())
+  createdAt DateTime @default(now())
+  
+  @@map("journal_entries")
+}
+
+// ========================================
+// REPORTING SYSTEM
+// ========================================
+
+model Report {
+  id       String @id @default(cuid())
+  name     String
+  type     ReportType
+  config   Json // Report configuration (filters, date ranges, etc.)
+  data     Json? // Cached report data
+  
+  // Access control
+  createdBy String // User ID
+  isPublic  Boolean @default(false)
+  
+  lastRun   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reports")
+}
+
+enum ReportType {
+  SALES
+  INVENTORY
+  FINANCIAL
+  DEALER_PERFORMANCE
+  CUSTOMER
+  CUSTOM
+}
+
+// ========================================
+// TRANSACTION MANAGEMENT & AI CATEGORIZATION
+// ========================================
+
+model BankTransaction {
+  id              String @id @default(cuid())
+  externalId      String @unique // Bank's transaction ID
+  date            DateTime
+  description     String
+  amount          Decimal // Negative for debits, positive for credits
+  balance         Decimal? // Account balance after transaction
+  transactionType String // DEBIT, CREDIT, TRANSFER, etc.
+  bankAccount     BankAccountType
+  
+  // AI Categorization Results
+  category        String? // ASSET_PURCHASE, COST_OF_GOODS_SOLD, OPERATING_EXPENSE, etc.
+  subcategory     String? // TOOLS, MATERIALS, VEHICLE_FUEL, etc.
+  confidence      Decimal? // AI confidence score 0-1
+  accountType     String? // ASSET, EXPENSE, LIABILITY
+  aiAnalysis      String? // AI explanation of categorization
+  needsReview     Boolean @default(false)
+  processed       Boolean @default(false)
+  
+  // Linked Records
+  assetId         String? // If transaction created an asset
+  asset           Asset? @relation(fields: [assetId], references: [id])
+  billId          String? // If transaction paid a bill
+  bill            Bill? @relation(fields: [billId], references: [id])
+  journalEntryId  String? // Associated journal entry
+  journalEntry    JournalEntry? @relation(fields: [journalEntryId], references: [id])
+  accountId       String? // For account association
+  account         Account? @relation("AccountTransactions", fields: [accountId], references: [id])
+  receiptId       String? @unique // If created from receipt capture
+  receipt         Receipt? @relation(fields: [receiptId], references: [id])
+  
+  // Raw Data
+  rawData         Json? // Original CSV/OFX data
+  metadata        Json? // Additional processing metadata
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bank_transactions")
+}
+
+model Receipt {
+  id                String @id @default(cuid())
+  filename          String
+  originalImage     String // Base64 encoded image
+  mimeType          String
+  fileSize          Int
+  location          String? // Where receipt was captured
+  notes             String?
+  
+  // Extracted Receipt Data (from Claude Vision)
+  vendor            String?
+  date              DateTime?
+  totalAmount       Decimal?
+  taxAmount         Decimal?
+  items             Json? // Array of receipt items
+  paymentMethod     String?
+  receiptNumber     String?
+  address           String?
+  
+  // OCR Results
+  extractedText     String? // Raw text from receipt
+  confidence        Decimal? // OCR confidence score
+  
+  // Processing Status
+  processed         Boolean @default(false)
+  needsReview       Boolean @default(false)
+  
+  // Linked Records
+  bankTransactionId String? @unique // Associated transaction
+  bankTransaction   BankTransaction?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("receipts")
+}
+
+enum BankAccountType {
+  BLUEVINE_CHECKING
+  AMEX_CREDIT
+  OTHER_CHECKING
+  OTHER_CREDIT
+  SAVINGS
+  PAYPAL
+  RECEIPT_CAPTURE
+}
+
+model Bill {
+  id              String @id @default(cuid())
+  billNumber      String @unique
+  vendor          String
+  amount          Decimal
+  dueDate         DateTime
+  issueDate       DateTime @default(now())
+  status          BillStatus @default(PENDING)
+  paidDate        DateTime?
+  paymentReference String? // Reference to payment transaction
+  
+  // Purchase Order Reference
+  poNumber        String?
+  purchaseOrder   PurchaseOrder? @relation(fields: [poNumber], references: [poNumber])
+  
+  // Line Items
+  items           BillItem[]
+  
+  // Payments
+  payments        BillPayment[]
+  transactions    BankTransaction[]
+  
+  description     String?
+  notes           String?
+  metadata        Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bills")
+}
+
+model BillItem {
+  id          String @id @default(cuid())
+  billId      String
+  bill        Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
+  
+  description String
+  quantity    Int
+  unitPrice   Decimal
+  totalPrice  Decimal
+  
+  // Product reference if applicable
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id])
+  
+  createdAt DateTime @default(now())
+
+  @@map("bill_items")
+}
+
+model BillPayment {
+  id            String @id @default(cuid())
+  billId        String
+  bill          Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
+  
+  amount        Decimal
+  paymentDate   DateTime
+  method        PaymentMethod
+  reference     String? // Transaction reference
+  
+  createdAt DateTime @default(now())
+
+  @@map("bill_payments")
+}
+
+enum BillStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+  DISPUTED
+}
+
+model PurchaseOrder {
+  id          String @id @default(cuid())
+  poNumber    String @unique
+  vendor      String
+  amount      Decimal
+  orderDate   DateTime @default(now())
+  expectedDate DateTime?
+  status      POStatus @default(PENDING)
+  
+  // Items
+  items       POItem[]
+  
+  // Related Bills
+  bills       Bill[]
+  
+  notes       String?
+  metadata    Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("purchase_orders")
+}
+
+model POItem {
+  id          String @id @default(cuid())
+  poId        String
+  po          PurchaseOrder @relation(fields: [poId], references: [id], onDelete: Cascade)
+  
+  description String
+  quantity    Int
+  unitPrice   Decimal
+  totalPrice  Decimal
+  
+  // Product reference if applicable
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id])
+  
+  createdAt DateTime @default(now())
+
+  @@map("po_items")
+}
+
+enum POStatus {
+  PENDING
+  SENT
+  ACKNOWLEDGED
+  RECEIVED
+  CANCELLED
+}
+
+// ========================================
+// ASSET MANAGEMENT
+// ========================================
+
+model Asset {
+  id                    String @id @default(cuid())
+  name                  String
+  description           String?
+  category              AssetCategory
+  serialNumber          String @unique
+  model                 String?
+  manufacturer          String?
+  
+  // Financial information
+  purchaseDate          DateTime
+  purchasePrice         Decimal
+  currentValue          Decimal
+  
+  // Condition and status
+  condition             AssetCondition
+  status                AssetStatus @default(ACTIVE)
+  
+  // Location and assignment
+  location              String?
+  assignedTo            String?
+  
+  // Maintenance
+  warrantyExpiry        DateTime?
+  maintenanceSchedule   String?
+  lastMaintenanceDate   DateTime?
+  
+  // Insurance
+  insurancePolicyNumber String?
+  
+  // Images stored in Cloudinary
+  images                Json? // Array of image objects with url, publicId, caption, isPrimary
+  
+  // Bank transaction relationship (for auto-created assets)
+  bankTransactions      BankTransaction[]
+  
+  // Additional information
+  notes                 String?
+  metadata              Json? // For custom fields
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("assets")
+}
+
+enum AssetCategory {
+  TOOLS
+  VEHICLES
+  EQUIPMENT
+  TECHNOLOGY
+  FURNITURE
+  OTHER
+}
+
+enum AssetCondition {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+  DAMAGED
+}
+
+enum AssetStatus {
+  ACTIVE
+  INACTIVE
+  SOLD
+  DISPOSED
+  STOLEN
+}

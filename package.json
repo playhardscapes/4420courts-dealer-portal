@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3002",
-    "build": "SKIP_ENV_VALIDATION=true next build",
+    "build": "prisma generate && SKIP_ENV_VALIDATION=true next build",
     "start": "next start -p ${PORT:-3001}",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -28,7 +31,12 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "postcss": "^8.0.0",
+    "prisma": "^6.12.0",
     "tailwindcss": "^3.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
