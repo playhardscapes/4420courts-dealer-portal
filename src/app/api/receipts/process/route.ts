@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         date: extractionResult.data.date,
         totalAmount: extractionResult.data.total,
         taxAmount: extractionResult.data.tax || 0,
-        items: extractionResult.data.items || [],
+        items: (extractionResult.data.items || []) as any,
         
         // OCR results
         extractedText: extractionResult.data.rawText,
