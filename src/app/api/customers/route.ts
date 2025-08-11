@@ -6,7 +6,7 @@ import { CustomerGroup } from '@prisma/client';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const group = searchParams.get('group') as CustomerGroup | null;
+    const groupParam = searchParams.get('group');
     const status = searchParams.get('status'); // LEAD, ACTIVE, etc.
     const search = searchParams.get('search');
     const page = parseInt(searchParams.get('page') || '1');
@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
     const where: any = {};
 
     // Apply filters
-    if (group && group !== 'ALL') {
-      where.customerGroup = group;
+    if (groupParam && groupParam !== 'ALL') {
+      where.customerGroup = groupParam as CustomerGroup;
     }
     
     // Filter by user status (LEAD vs ACTIVE customers)

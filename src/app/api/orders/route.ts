@@ -6,8 +6,8 @@ import { OrderStatus, PaymentStatus } from '@prisma/client';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status') as OrderStatus | null;
-    const paymentStatus = searchParams.get('paymentStatus') as PaymentStatus | null;
+    const statusParam = searchParams.get('status');
+    const paymentStatusParam = searchParams.get('paymentStatus');
     const search = searchParams.get('search');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -16,11 +16,11 @@ export async function GET(request: NextRequest) {
     const where: any = {};
 
     // Apply filters
-    if (status && status !== 'ALL') {
-      where.status = status;
+    if (statusParam && statusParam !== 'ALL') {
+      where.status = statusParam as OrderStatus;
     }
-    if (paymentStatus && paymentStatus !== 'ALL') {
-      where.paymentStatus = paymentStatus;
+    if (paymentStatusParam && paymentStatusParam !== 'ALL') {
+      where.paymentStatus = paymentStatusParam as PaymentStatus;
     }
     if (search) {
       where.OR = [

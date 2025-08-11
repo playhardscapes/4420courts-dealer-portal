@@ -6,9 +6,9 @@ import { ProductCategory, ProductType, ProductStatus } from '@prisma/client';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category') as ProductCategory | null;
-    const status = searchParams.get('status') as ProductStatus | null;
-    const type = searchParams.get('type') as ProductType | null;
+    const categoryParam = searchParams.get('category');
+    const statusParam = searchParams.get('status');
+    const typeParam = searchParams.get('type');
     const search = searchParams.get('search');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -17,14 +17,14 @@ export async function GET(request: NextRequest) {
     const where: any = {};
 
     // Apply filters
-    if (category && category !== 'ALL') {
-      where.category = category;
+    if (categoryParam && categoryParam !== 'ALL') {
+      where.category = categoryParam as ProductCategory;
     }
-    if (status && status !== 'ALL') {
-      where.status = status;
+    if (statusParam && statusParam !== 'ALL') {
+      where.status = statusParam as ProductStatus;
     }
-    if (type && type !== 'ALL') {
-      where.type = type;
+    if (typeParam && typeParam !== 'ALL') {
+      where.type = typeParam as ProductType;
     }
     if (search) {
       where.OR = [

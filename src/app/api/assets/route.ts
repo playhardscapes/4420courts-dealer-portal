@@ -6,8 +6,8 @@ import { AssetCategory, AssetCondition, AssetStatus } from '@prisma/client';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category') as AssetCategory | null;
-    const status = searchParams.get('status') as AssetStatus | null;
+    const categoryParam = searchParams.get('category');
+    const statusParam = searchParams.get('status');
     const search = searchParams.get('search');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -16,11 +16,11 @@ export async function GET(request: NextRequest) {
     const where: any = {};
 
     // Apply filters
-    if (category && category !== 'ALL') {
-      where.category = category;
+    if (categoryParam && categoryParam !== 'ALL') {
+      where.category = categoryParam as AssetCategory;
     }
-    if (status && status !== 'ALL') {
-      where.status = status;
+    if (statusParam && statusParam !== 'ALL') {
+      where.status = statusParam as AssetStatus;
     }
     if (search) {
       where.OR = [

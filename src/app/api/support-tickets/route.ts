@@ -6,9 +6,9 @@ import { TicketPriority, TicketStatus, TicketCategory } from '@prisma/client';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status') as TicketStatus | null;
-    const priority = searchParams.get('priority') as TicketPriority | null;
-    const category = searchParams.get('category') as TicketCategory | null;
+    const statusParam = searchParams.get('status');
+    const priorityParam = searchParams.get('priority');
+    const categoryParam = searchParams.get('category');
     const search = searchParams.get('search');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -17,14 +17,14 @@ export async function GET(request: NextRequest) {
     const where: any = {};
 
     // Apply filters
-    if (status && status !== 'ALL') {
-      where.status = status;
+    if (statusParam && statusParam !== 'ALL') {
+      where.status = statusParam as TicketStatus;
     }
-    if (priority && priority !== 'ALL') {
-      where.priority = priority;
+    if (priorityParam && priorityParam !== 'ALL') {
+      where.priority = priorityParam as TicketPriority;
     }
-    if (category && category !== 'ALL') {
-      where.category = category;
+    if (categoryParam && categoryParam !== 'ALL') {
+      where.category = categoryParam as TicketCategory;
     }
     if (search) {
       where.OR = [
