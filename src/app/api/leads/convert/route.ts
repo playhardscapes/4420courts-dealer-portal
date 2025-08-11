@@ -21,6 +21,15 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Get existing customer data first
+    const existingCustomer = await prisma.customer.findUnique({ 
+      where: { id: customerId } 
+    });
+
+    // Safely access metadata with proper typing
+    const existingMetadata = existingCustomer?.metadata as Record<string, any> || {};
+    const existingLeadData = existingMetadata.leadData || {};
+
     // Update customer metadata to mark as converted
     const updatedCustomer = await prisma.customer.update({
       where: { id: customerId },
@@ -28,7 +37,7 @@ export async function POST(request: NextRequest) {
         metadata: {
           convertedFromLead: true,
           conversionDate: new Date().toISOString(),
-          leadData: (await prisma.customer.findUnique({ where: { id: customerId } }))?.metadata?.leadData || {},
+          leadData: existingLeadData,
           originalLeadStatus: 'CONVERTED'
         },
         updatedAt: new Date()
