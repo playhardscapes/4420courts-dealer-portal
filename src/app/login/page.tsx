@@ -122,14 +122,6 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
-
-          <div className="mt-6 p-4 bg-gray-50 rounded-md">
-            <p className="text-xs text-gray-600 font-medium mb-2">Demo Credentials:</p>
-            <div className="text-xs text-gray-500 space-y-1">
-              <div>Admin: admin@4420courts.com / admin123</div>
-              <div>Dealer: dealer@4420courts.com / dealer123</div>
-            </div>
-          </div>
         </div>
 
         <div className="text-center">

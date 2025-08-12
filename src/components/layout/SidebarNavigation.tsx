@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   HomeIcon,
   BookOpenIcon,
@@ -26,7 +27,8 @@ import {
   ArrowsRightLeftIcon,
   CpuChipIcon,
   CameraIcon,
-  ChatBubbleLeftRightIcon
+  ChatBubbleLeftRightIcon,
+  ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -89,6 +91,8 @@ export function SidebarNavigation() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>(['Accounting']);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
 
   const toggleExpanded = (itemName: string) => {
     setExpandedItems(prev => 
@@ -96,6 +100,11 @@ export function SidebarNavigation() {
         ? prev.filter(name => name !== itemName)
         : [...prev, itemName]
     );
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
   };
 
   return (
@@ -185,6 +194,30 @@ export function SidebarNavigation() {
                   );
                 })}
               </ul>
+              
+              {/* Mobile user info at bottom */}
+              <div className="border-t border-gray-200 pt-4 mt-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-semibold">
+                        {user?.name?.charAt(0).toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-gray-900">{user?.name || 'User'}</p>
+                      <p className="text-xs text-gray-500">{user?.email || 'user@example.com'}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                    title="Sign out"
+                  >
+                    <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
             </nav>
           </div>
         </div>
@@ -271,14 +304,25 @@ export function SidebarNavigation() {
           
           {/* User info at bottom */}
           <div className="border-t border-gray-200 pt-4">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-semibold">D</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-semibold">
+                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-900">{user?.name || 'User'}</p>
+                  <p className="text-xs text-gray-500">{user?.email || 'user@example.com'}</p>
+                </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-900">Dealer User</p>
-                <p className="text-xs text-gray-500">dealer@example.com</p>
-              </div>
+              <button
+                onClick={handleLogout}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                title="Sign out"
+              >
+                <ArrowRightOnRectangleIcon className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </div>
