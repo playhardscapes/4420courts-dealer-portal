@@ -17,7 +17,8 @@ import {
   ArrowDownTrayIcon,
   ShareIcon,
   TagIcon,
-  ClockIcon
+  ClockIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 
 interface ProjectPhoto {

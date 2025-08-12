@@ -218,7 +218,13 @@ export default function CustomerFormEnhanced({ customer, onSave, onCancel }: Cus
                 value={formData.billingAddress?.street || ''}
                 onChange={(e) => setFormData({
                   ...formData, 
-                  billingAddress: {...formData.billingAddress, street: e.target.value}
+                  billingAddress: {
+                    street: e.target.value,
+                    city: formData.billingAddress?.city || '',
+                    state: formData.billingAddress?.state || '',
+                    zipCode: formData.billingAddress?.zipCode || '',
+                    country: formData.billingAddress?.country || 'US'
+                  }
                 })}
                 className="w-full border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
               />
@@ -231,7 +237,13 @@ export default function CustomerFormEnhanced({ customer, onSave, onCancel }: Cus
                   value={formData.billingAddress?.city || ''}
                   onChange={(e) => setFormData({
                     ...formData, 
-                    billingAddress: {...formData.billingAddress, city: e.target.value}
+                    billingAddress: {
+                      street: formData.billingAddress?.street || '',
+                      city: e.target.value,
+                      state: formData.billingAddress?.state || '',
+                      zipCode: formData.billingAddress?.zipCode || '',
+                      country: formData.billingAddress?.country || 'US'
+                    }
                   })}
                   className="w-full border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                 />
@@ -243,7 +255,13 @@ export default function CustomerFormEnhanced({ customer, onSave, onCancel }: Cus
                   value={formData.billingAddress?.state || ''}
                   onChange={(e) => setFormData({
                     ...formData, 
-                    billingAddress: {...formData.billingAddress, state: e.target.value}
+                    billingAddress: {
+                      street: formData.billingAddress?.street || '',
+                      city: formData.billingAddress?.city || '',
+                      state: e.target.value,
+                      zipCode: formData.billingAddress?.zipCode || '',
+                      country: formData.billingAddress?.country || 'US'
+                    }
                   })}
                   className="w-full border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                 />
@@ -255,7 +273,13 @@ export default function CustomerFormEnhanced({ customer, onSave, onCancel }: Cus
                   value={formData.billingAddress?.zipCode || ''}
                   onChange={(e) => setFormData({
                     ...formData, 
-                    billingAddress: {...formData.billingAddress, zipCode: e.target.value}
+                    billingAddress: {
+                      street: formData.billingAddress?.street || '',
+                      city: formData.billingAddress?.city || '',
+                      state: formData.billingAddress?.state || '',
+                      zipCode: e.target.value,
+                      country: formData.billingAddress?.country || 'US'
+                    }
                   })}
                   className="w-full border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                 />
@@ -290,7 +314,13 @@ export default function CustomerFormEnhanced({ customer, onSave, onCancel }: Cus
                   value={formData.projectAddress?.street || ''}
                   onChange={(e) => setFormData({
                     ...formData, 
-                    projectAddress: {...(formData.projectAddress || {}), street: e.target.value}
+                    projectAddress: {
+                      street: e.target.value,
+                      city: formData.projectAddress?.city || '',
+                      state: formData.projectAddress?.state || '',
+                      zipCode: formData.projectAddress?.zipCode || '',
+                      country: formData.projectAddress?.country || 'US'
+                    }
                   })}
                   className="w-full border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                   placeholder="e.g., 150 Scruggs Road - Tennis Complex"
@@ -304,7 +334,13 @@ export default function CustomerFormEnhanced({ customer, onSave, onCancel }: Cus
                     value={formData.projectAddress?.city || ''}
                     onChange={(e) => setFormData({
                       ...formData, 
-                      projectAddress: {...(formData.projectAddress || {}), city: e.target.value}
+                      projectAddress: {
+                        street: formData.projectAddress?.street || '',
+                        city: e.target.value,
+                        state: formData.projectAddress?.state || '',
+                        zipCode: formData.projectAddress?.zipCode || '',
+                        country: formData.projectAddress?.country || 'US'
+                      }
                     })}
                     className="w-full border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                   />
@@ -316,7 +352,13 @@ export default function CustomerFormEnhanced({ customer, onSave, onCancel }: Cus
                     value={formData.projectAddress?.state || ''}
                     onChange={(e) => setFormData({
                       ...formData, 
-                      projectAddress: {...(formData.projectAddress || {}), state: e.target.value}
+                      projectAddress: {
+                        street: formData.projectAddress?.street || '',
+                        city: formData.projectAddress?.city || '',
+                        state: e.target.value,
+                        zipCode: formData.projectAddress?.zipCode || '',
+                        country: formData.projectAddress?.country || 'US'
+                      }
                     })}
                     className="w-full border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                   />
@@ -328,7 +370,13 @@ export default function CustomerFormEnhanced({ customer, onSave, onCancel }: Cus
                     value={formData.projectAddress?.zipCode || ''}
                     onChange={(e) => setFormData({
                       ...formData, 
-                      projectAddress: {...(formData.projectAddress || {}), zipCode: e.target.value}
+                      projectAddress: {
+                        street: formData.projectAddress?.street || '',
+                        city: formData.projectAddress?.city || '',
+                        state: formData.projectAddress?.state || '',
+                        zipCode: e.target.value,
+                        country: formData.projectAddress?.country || 'US'
+                      }
                     })}
                     className="w-full border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                   />

@@ -38,8 +38,8 @@ interface BillMatch {
 }
 
 export class TransactionCategorizer {
-  private businessRules: Map<string, any>;
-  private vendorPatterns: Map<string, any>;
+  private businessRules!: Map<string, any>;
+  private vendorPatterns!: Map<string, any>;
   private accountMappings: Map<string, string>;
 
   constructor() {
@@ -152,7 +152,7 @@ export class TransactionCategorizer {
         creditAccount: transaction.bankAccount === 'BLUEVINE_CHECKING' 
           ? this.accountMappings.get('CASH') 
           : this.accountMappings.get('CREDIT_CARD_PAYABLE'),
-        vendor
+        vendor: vendor || undefined
       };
     }
 
@@ -170,7 +170,7 @@ export class TransactionCategorizer {
         creditAccount: transaction.bankAccount === 'BLUEVINE_CHECKING' 
           ? this.accountMappings.get('CASH') 
           : this.accountMappings.get('CREDIT_CARD_PAYABLE'),
-        vendor
+        vendor: vendor || undefined
       };
     }
 
@@ -195,7 +195,7 @@ export class TransactionCategorizer {
         subcategory: 'NEEDS_REVIEW',
         confidence: 0.3,
         accountType: 'EXPENSE',
-        analysis: `Unable to categorize: ${error.message}`,
+        analysis: `Unable to categorize: ${error instanceof Error ? error.message : String(error)}`,
         needsReview: true,
         actions: []
       };

@@ -222,7 +222,7 @@ Provide categorization as JSON with this exact structure:
         subcategory: 'NEEDS_REVIEW',
         confidence: 0.3,
         accountType: 'EXPENSE',
-        analysis: `Parse error: ${error.message}`,
+        analysis: `Parse error: ${error instanceof Error ? error.message : String(error)}`,
         needsReview: true,
         actions: []
       };

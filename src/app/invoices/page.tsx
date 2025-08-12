@@ -68,11 +68,9 @@ const sampleInvoices: Invoice[] = [
     status: 'pending',
     issueDate: '2025-02-15',
     dueDate: '2025-03-01',
-    paidDate: null,
     customerId: '1',
     projectId: '2',
     description: '50% down payment - Level 5 Full Project Management',
-    paymentMethod: null,
     paymentTerms: 'net30',
     lineItems: [
       { description: 'Down Payment (50%)', quantity: 1, rate: 21250, amount: 21250 }
@@ -87,11 +85,9 @@ const sampleInvoices: Invoice[] = [
     status: 'overdue',
     issueDate: '2025-01-15',
     dueDate: '2025-01-30',
-    paidDate: null,
     customerId: '3',
     projectId: '3',
     description: 'Final payment - Level 4 Project completion',
-    paymentMethod: null,
     paymentTerms: 'net30',
     lineItems: [
       { description: 'Final Payment (50%)', quantity: 1, rate: 11000, amount: 11000 }

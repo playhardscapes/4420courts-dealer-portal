@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { 
   CloudIcon,
   SunIcon,
-  CloudRainIcon,
+  CloudIcon as CloudRainIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,

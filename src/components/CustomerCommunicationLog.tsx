@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Customer, getAllCustomers, getCustomerDisplayName, getCustomerEmail, getBillingEmail } from '../data/customers';
+import { Customer, getAllCustomers, getCustomerDisplayName, getCustomerEmail, getBillingEmail, getBillingContactName } from '../data/customers';
 import { 
   ChatBubbleLeftRightIcon,
   PhoneIcon,
@@ -194,7 +194,7 @@ export default function CustomerCommunicationLog() {
 
   const [formData, setFormData] = useState({
     customerId: '',
-    contactType: 'primary' as const,
+    contactType: 'primary' as 'primary' | 'billing' | 'project' | 'other',
     contactName: '',
     contactInfo: '',
     communicationType: 'email' as const,
@@ -219,7 +219,7 @@ export default function CustomerCommunicationLog() {
       setFormData({
         ...formData,
         customerId,
-        contactName: customer.primaryContact.name,
+        contactName: getCustomerDisplayName(customer),
         contactInfo: getCustomerEmail(customer)
       });
     }
@@ -233,15 +233,17 @@ export default function CustomerCommunicationLog() {
     
     switch (contactType) {
       case 'primary':
-        contactName = selectedCustomer.primaryContact.name;
+        contactName = getCustomerDisplayName(selectedCustomer);
         contactInfo = getCustomerEmail(selectedCustomer);
         break;
       case 'billing':
-        contactName = selectedCustomer.billingContact?.name || '';
+        contactName = getBillingContactName(selectedCustomer);
         contactInfo = getBillingEmail(selectedCustomer);
         break;
       case 'project':
-        contactName = selectedCustomer.projectContact?.name || '';
+        contactName = selectedCustomer.projectContact?.firstName && selectedCustomer.projectContact?.lastName 
+          ? `${selectedCustomer.projectContact.firstName} ${selectedCustomer.projectContact.lastName}`
+          : '';
         contactInfo = selectedCustomer.projectContact?.email || '';
         break;
     }
@@ -255,8 +257,8 @@ export default function CustomerCommunicationLog() {
   };
 
   const handleCreateCommunication = () => {
-    const customerName = customers.find(c => c.id === formData.customerId)?.companyName || 
-                        customers.find(c => c.id === formData.customerId)?.primaryContact.name || '';
+    const customer = customers.find(c => c.id === formData.customerId);
+    const customerName = customer ? getCustomerDisplayName(customer) : '';
 
     const newCommunication: CommunicationLog = {
       id: `comm_${Date.now()}`,

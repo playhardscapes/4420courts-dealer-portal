@@ -144,7 +144,7 @@ export default function CustomersPage() {
   };
 
   const isRecentlyConverted = (customer: Customer) => {
-    if (!customer.metadata?.convertedFromProspect) return false;
+    if (!customer.metadata?.convertedFromProspect || !customer.metadata.conversionDate) return false;
     const conversionDate = new Date(customer.metadata.conversionDate);
     const daysSinceConversion = (Date.now() - conversionDate.getTime()) / (1000 * 60 * 60 * 24);
     return daysSinceConversion <= 7; // Show badge for 7 days
@@ -395,7 +395,7 @@ export default function CustomersPage() {
                         {customer.companyName && (
                           <div className="text-sm text-gray-500">{customer.companyName}</div>
                         )}
-                        {customer.metadata?.convertedFromProspect && (
+                        {customer.metadata?.convertedFromProspect && customer.metadata.conversionDate && (
                           <div className="text-xs text-blue-600">
                             Converted from prospect: {new Date(customer.metadata.conversionDate).toLocaleDateString()}
                           </div>

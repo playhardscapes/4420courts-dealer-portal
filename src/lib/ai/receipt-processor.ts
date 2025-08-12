@@ -257,8 +257,7 @@ Focus on accuracy for business expense tracking. If you can't read something cle
             category: 'SUPPLIES'
           }
         ],
-        rawText: 'Receipt text could not be clearly read',
-        confidence: 0.6
+        rawText: 'Receipt text could not be clearly read'
       }
     };
   }

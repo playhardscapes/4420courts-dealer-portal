@@ -352,7 +352,8 @@ export function OrderDashboard() {
       'PAID': 'bg-green-100 text-green-800',
       'PARTIALLY_PAID': 'bg-blue-100 text-blue-800',
       'FAILED': 'bg-red-100 text-red-800',
-      'REFUNDED': 'bg-gray-100 text-gray-800'
+      'REFUNDED': 'bg-gray-100 text-gray-800',
+      'CANCELLED': 'bg-gray-100 text-gray-800'
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
   };

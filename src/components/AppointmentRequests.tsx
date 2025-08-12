@@ -191,7 +191,8 @@ export default function AppointmentRequests() {
       companyName: request.organizationType !== 'INDIVIDUAL' ? request.organizationName : undefined,
       organizationType: request.organizationType,
       primaryContact: {
-        name: `${request.firstName} ${request.lastName}`,
+        firstName: request.firstName,
+        lastName: request.lastName,
         email: request.email,
         phone: request.phone,
         title: request.organizationType === 'INDIVIDUAL' ? 'Homeowner' : 'Primary Contact'
