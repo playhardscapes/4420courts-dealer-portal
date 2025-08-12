@@ -65,13 +65,13 @@ export async function POST(request: NextRequest) {
             category: 'UNKNOWN',
             needsReview: true,
             processed: false,
-            aiAnalysis: `Error during AI processing: ${error.message}`
+            aiAnalysis: `Error during AI processing: ${error instanceof Error ? error.message : String(error)}`
           }
         });
         
         processedTransactions.push({
           transaction: createdTransaction,
-          result: { error: error.message }
+          result: { error: error instanceof Error ? error.message : String(error) }
         });
       }
     }
