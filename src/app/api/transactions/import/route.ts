@@ -79,11 +79,11 @@ export async function POST(request: NextRequest) {
     // Generate summary
     const summary = {
       totalTransactions: processedTransactions.length,
-      categorized: processedTransactions.filter(t => !t.result.error).length,
+      categorized: processedTransactions.filter(t => !('error' in t.result)).length,
       needsReview: processedTransactions.filter(t => t.transaction.needsReview).length,
-      assetsCreated: processedTransactions.filter(t => t.result?.actions?.includes('CREATE_ASSET')).length,
-      billsMatched: processedTransactions.filter(t => t.result?.actions?.includes('MATCH_BILL')).length,
-      journalEntries: processedTransactions.filter(t => t.result?.actions?.includes('CREATE_JOURNAL_ENTRY')).length
+      assetsCreated: processedTransactions.filter(t => !('error' in t.result) && t.result?.actions?.includes('CREATE_ASSET')).length,
+      billsMatched: processedTransactions.filter(t => !('error' in t.result) && t.result?.actions?.includes('MATCH_BILL')).length,
+      journalEntries: processedTransactions.filter(t => !('error' in t.result) && t.result?.actions?.includes('CREATE_JOURNAL_ENTRY')).length
     };
 
     return NextResponse.json({
