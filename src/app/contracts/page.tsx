@@ -348,7 +348,7 @@ SCOPE OF WORK:
 MATERIALS AND PRICING:
 {{pricing_breakdown}}
 
-TOTAL CONTRACT AMOUNT: ${{total_amount}}
+TOTAL CONTRACT AMOUNT: $\{\{total_amount\}\}
 
 PAYMENT TERMS:
 - Deposit: ${{deposit_amount}} ({{deposit_percentage}}%) due upon signing
@@ -387,7 +387,7 @@ Contractor Signature: _________________________ Date: _______
     // Replace template variables with actual data
     let populatedContract = contractTemplate;
     Object.entries(templateData).forEach(([key, value]) => {
-      const regex = new RegExp(`{{${key}}}`, 'g');
+      const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
       populatedContract = populatedContract.replace(regex, value.toString());
     });
 
