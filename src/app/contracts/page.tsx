@@ -328,40 +328,40 @@ Total: $${data.contractValue.toLocaleString()}`,
     // using the template and data above
     const contractTemplate = `COURT RESURFACING CONTRACT
 
-This Contract is entered into on {{contract_date}} between {{company_name}}, a {{company_state}} corporation ("Contractor"), and {{customer_name}} ("Customer").
+This Contract is entered into on \{\{contract_date\}\} between \{\{company_name\}\}, a \{\{company_state\}\} corporation ("Contractor"), and \{\{customer_name\}\} ("Customer").
 
 CUSTOMER INFORMATION:
-Name: {{customer_name}}
-Address: {{customer_address}}
-Phone: {{customer_phone}}
-Email: {{customer_email}}
+Name: \{\{customer_name\}\}
+Address: \{\{customer_address\}\}
+Phone: \{\{customer_phone\}\}
+Email: \{\{customer_email\}\}
 
 PROJECT DETAILS:
-Project Location: {{project_address}}
-Court Type: {{court_type}}
-Square Footage: {{square_footage}}
-Surface Type: {{surface_type}}
+Project Location: \{\{project_address\}\}
+Court Type: \{\{court_type\}\}
+Square Footage: \{\{square_footage\}\}
+Surface Type: \{\{surface_type\}\}
 
 SCOPE OF WORK:
-{{scope_of_work}}
+\{\{scope_of_work\}\}
 
 MATERIALS AND PRICING:
-{{pricing_breakdown}}
+\{\{pricing_breakdown\}\}
 
 TOTAL CONTRACT AMOUNT: $\{\{total_amount\}\}
 
 PAYMENT TERMS:
-- Deposit: ${{deposit_amount}} ({{deposit_percentage}}%) due upon signing
-- Progress Payment: ${{progress_payment}} due {{progress_milestone}}
-- Final Payment: ${{final_payment}} due upon completion
+- Deposit: $\{\{deposit_amount\}\} (\{\{deposit_percentage\}\}%) due upon signing
+- Progress Payment: $\{\{progress_payment\}\} due \{\{progress_milestone\}\}
+- Final Payment: $\{\{final_payment\}\} due upon completion
 
 TIMELINE:
-Start Date: {{start_date}}
-Estimated Completion: {{completion_date}}
+Start Date: \{\{start_date\}\}
+Estimated Completion: \{\{completion_date\}\}
 Weather delays may extend timeline as necessary.
 
 WARRANTY:
-Contractor warrants all work and materials for {{warranty_period}} from completion date.
+Contractor warrants all work and materials for \{\{warranty_period\}\} from completion date.
 
 STANDARD CONDITIONS:
 - Weather delays beyond contractor control will extend timeline accordingly.
@@ -374,15 +374,15 @@ STANDARD CONDITIONS:
 - Customer agrees to final walk-through inspection before completion.
 
 ADDITIONAL TERMS:
-{{additional_terms}}
+\{\{additional_terms\}\}
 
 By signing below, both parties agree to the terms and conditions of this contract.
 
 Customer Signature: _________________________ Date: _______
-{{customer_name}}
+\{\{customer_name\}\}
 
 Contractor Signature: _________________________ Date: _______
-{{contractor_name}}, {{company_name}}`;
+\{\{contractor_name\}\}, \{\{company_name\}\}`;
 
     // Replace template variables with actual data
     let populatedContract = contractTemplate;
