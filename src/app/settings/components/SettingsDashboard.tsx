@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { DealerServiceLevel } from '@prisma/client';
+import { useState, useEffect } from 'react';
 import { 
   UserIcon, 
   MapPinIcon, 
@@ -23,7 +22,6 @@ interface DealerSettings {
     lastName: string;
     email: string;
     phone: string;
-    serviceLevel: DealerServiceLevel;
   };
   business: {
     businessAddress: {
@@ -100,46 +98,20 @@ interface ContractField {
   options?: string[]; // for select fields
 }
 
-export function SettingsDashboard() {
+interface SettingsDashboardProps {
+  initialSettings: any;
+  onSettingsChange: (settings: any) => void;
+}
+
+export function SettingsDashboard({ initialSettings, onSettingsChange }: SettingsDashboardProps) {
   const [activeTab, setActiveTab] = useState<'profile' | 'business' | 'territory' | 'notifications' | 'preferences' | 'pricing' | 'seasonal' | 'contract'>('profile');
-  const [settings, setSettings] = useState<DealerSettings>({
-    profile: {
-      companyName: 'Pro Court Solutions',
-      dealerCode: 'PCS001',
-      firstName: 'John',
-      lastName: 'Smith',
-      email: 'john@procourtsolutions.com',
-      phone: '(555) 123-4567',
-      serviceLevel: 'LEVEL_4'
-    },
-    business: {
-      businessAddress: {
-        street: '123 Business Ave',
-        city: 'Tampa',
-        state: 'FL',
-        zipCode: '33601'
-      },
-      licenseNumber: 'FL-CON-2024-001',
-      taxId: '12-3456789',
-      commissionRate: 0.10
-    },
-    territory: {
-      states: ['Florida', 'Georgia'],
-      regions: ['Central Florida', 'North Florida', 'South Georgia'],
-      exclusiveZip: ['33601', '33602', '33603', '30309', '30310']
-    },
-    notifications: {
-      orderAlerts: true,
-      commissionUpdates: true,
-      customerMessages: true,
-      systemUpdates: false
-    },
-    preferences: {
-      timezone: 'America/New_York',
-      currency: 'USD',
-      dateFormat: 'MM/DD/YYYY',
-      language: 'English'
-    },
+  const [settings, setSettings] = useState<DealerSettings>(() => {
+    return {
+      profile: initialSettings?.profile || {},
+      business: initialSettings?.business || {},
+      territory: initialSettings?.territory || {},
+      notifications: initialSettings?.notifications || {},
+      preferences: initialSettings?.preferences || {},
     pricing: {
       items: [
         { id: '1', category: 'Court Surfacing', description: '2 coats of acrylic resurfacer', unit: 'per sq ft', basePrice: 5.15, notes: 'Includes surface preparation and base coat' },
@@ -261,7 +233,27 @@ Contractor Signature: _________________________ Date: _______
         'Customer agrees to final walk-through inspection before completion.'
       ]
     }
+    };
   });
+
+  // Update settings when initialSettings changes
+  useEffect(() => {
+    if (initialSettings) {
+      setSettings(prev => ({
+        ...prev,
+        profile: initialSettings.profile || prev.profile,
+        business: initialSettings.business || prev.business,
+        territory: initialSettings.territory || prev.territory,
+        notifications: initialSettings.notifications || prev.notifications,
+        preferences: initialSettings.preferences || prev.preferences,
+      }));
+    }
+  }, [initialSettings]);
+
+  // Notify parent component when settings change
+  useEffect(() => {
+    onSettingsChange(settings);
+  }, [settings, onSettingsChange]);
 
   const tabs = [
     { id: 'profile', name: 'Profile', icon: UserIcon },
@@ -356,21 +348,6 @@ Contractor Signature: _________________________ Date: _______
         </div>
       </div>
       
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Service Level</label>
-        <select
-          value={settings.profile.serviceLevel}
-          onChange={(e) => handleInputChange('profile', 'serviceLevel', e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="LEVEL_1">Level 1 - Free DIY Resources ($0)</option>
-          <option value="LEVEL_2">Level 2 - Monthly Membership ($49.99/month)</option>
-          <option value="LEVEL_3">Level 3 - Coating & Lining Specialist ($10k-15k)</option>
-          <option value="LEVEL_4">Level 4 - Project Management + Finish ($15k-25k)</option>
-          <option value="LEVEL_5">Level 5 - Full Project Management ($30k-45k)</option>
-          <option value="LEVEL_5_5">Level 5.5 - Premium Personalized (Contact for Pricing)</option>
-        </select>
-      </div>
     </div>
   );
 
